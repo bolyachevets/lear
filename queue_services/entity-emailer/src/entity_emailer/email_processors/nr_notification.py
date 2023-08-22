@@ -38,6 +38,43 @@ class Option(Enum):
     REFUND = 'refund'
 
 
+def get_url(entity_type_cd: str):
+
+    DECIDE_BUSINESS_URL =  current_app.config.get('DECIDE_BUSINESS_URL')
+    CORP_FORMS_URL =  current_app.config.get('CORP_FORMS_URL')
+    BUSINESS_URL = current_app.config.get('BUSINESS_URL')
+    CORP_ONLINE_URL = current_app.config.get('COLIN_URL')
+    GENERIC_STEPS = 'Submit appropriate form to BC Registries. Call if assistance required'
+    EX_COOP_ASSOC = 'Extraprovincial Cooperative Association'
+
+    url = {
+        # BC Types
+        'CR':  CORP_ONLINE_URL,
+        'UL':  CORP_ONLINE_URL,
+        'FR':  DECIDE_BUSINESS_URL,
+        'GP':  DECIDE_BUSINESS_URL,
+        'DBA': DECIDE_BUSINESS_URL,
+        'LP':  CORP_FORMS_URL,
+        'LL':  CORP_FORMS_URL,
+        'CP':  BUSINESS_URL,
+        'BC':  BUSINESS_URL,
+        'CC':  CORP_ONLINE_URL,
+        'SO': 'BC Social Enterprise',
+        'PA': GENERIC_STEPS,
+        'FI': GENERIC_STEPS,
+        'PAR': GENERIC_STEPS,
+        # XPRO and Foreign Types
+        'XCR': CORP_ONLINE_URL,
+        'XUL': CORP_ONLINE_URL,
+        'RLC': CORP_ONLINE_URL,
+        'XLP': CORP_FORMS_URL,
+        'XLL': CORP_FORMS_URL,
+        'XCP': EX_COOP_ASSOC,
+        'XSO': EX_COOP_ASSOC,
+    }
+    return url.get(entity_type_cd, None)
+
+
 def process(email_info: dict, option) -> dict:  # pylint: disable-msg=too-many-locals
     """
     Build the email for Name Request notification.
@@ -72,7 +109,7 @@ def process(email_info: dict, option) -> dict:  # pylint: disable-msg=too-many-l
             legal_name = n_item['name']
             break
 
-    name_request_url = current_app.config.get('NAME_REQUEST_URL')
+    name_request_url = get_url(nr_data["entity_type_cd"])
     decide_business_url = current_app.config.get('DECIDE_BUSINESS_URL')
 
     # render template with vars
